@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional
 from uuid import UUID, uuid4
 from app.models.Choice import Choice
+from fastapi import HTTPException
 
 
 class PollCreate(BaseModel):
@@ -13,11 +14,14 @@ class PollCreate(BaseModel):
     options: List[str]
     expires_at: Optional[datetime] = None
 
+    @field_validator("options")  # ignore this pycharm error
     @classmethod
-    @field_validator("options")
     def validate_options(cls, v: List[str]) -> List[str]:
         if len(v) < 2 or len(v) > 5:
-            raise ValueError("A poll must contain between 2 and 5 choices.")
+            raise HTTPException(
+                status_code=400,  # 400 == bad request
+                detail="A poll must contain between 2 and 5 choices."
+            )
         return v
 
     def create_poll(self) -> "Poll":
@@ -34,7 +38,10 @@ class PollCreate(BaseModel):
             for index, desc in enumerate(self.options)
         ]
         if self.expires_at is not None and self.expires_at < datetime.now(timezone.utc):
-            raise ValueError("A poll's expiration date must be in the future.")
+            raise HTTPException(
+                status_code=400,
+                detail="A poll's expiration date must be in the future."
+            )
 
         return Poll(title=self.title, options=choices, expires_at=self.expires_at)
 
