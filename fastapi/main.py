@@ -10,11 +10,8 @@ from upstash_redis import Redis
 from app.models.Polls import Poll, PollCreate
 
 load_dotenv()  # set environment variables from .env.
-KV_REST_API_URL = os.getenv('KV_REST_API_URL')
-KV_REST_API_TOKEN = os.getenv('KV_REST_API_TOKEN')
-
-print(f"\n\n{KV_REST_API_URL}")
-print(f"{KV_REST_API_TOKEN}")
+REDIS_REST_API_URL = os.getenv('KV_REST_API_URL')
+REDIS_REST_API_TOKEN = os.getenv('KV_REST_API_TOKEN')
 
 app = FastAPI()
 
@@ -41,15 +38,15 @@ def create_poll(poll: PollCreate):
 
 
 # exploration code - to be deleted later
-redis_client = Redis(url=KV_REST_API_URL, token=KV_REST_API_TOKEN)
-
-
-@app.post("/redis/save", tags=["throwaway"])
-def save_redis(uid: str, name: str):
-    redis_client.set(uid, name)
-    return {"status": "success"}
-
-
-@app.get("/redis/get/{uid}")
-def get_redis(uid: str):
-    return {"uid": uid, "name": redis_client.get(uid)}
+# redis_client = Redis(url=REDIS_REST_API_URL, token=REDIS_REST_API_TOKEN)
+#
+#
+# @app.post("/redis/save", tags=["throwaway"])
+# def save_redis(uid: str, name: str):
+#     redis_client.set(uid, name)
+#     return {"status": "success"}
+#
+#
+# @app.get("/redis/get/{uid}")
+# def get_redis(uid: str):
+#     return {"uid": uid, "name": redis_client.get(uid)}
